@@ -126,6 +126,69 @@ namespace ASK
             return CheckNode(root, new List<int>());
         }
 
+        public bool? RunDepthSearch(List<string> listX, List<string> listY, int depth = 15)
+        {
+            if (listX.Count != listY.Count)
+            {
+                return null;
+            }
+
+            int tupleCount = listX.Count;
+
+            UInt128 count = 0;
+
+            List<Task<bool>> tasks = new List<Task<bool>>();
+
+            for (int i = 0; i < tupleCount; i++)
+            {
+                var j = i;
+                var task = Task.Run(() =>
+                {
+                    if (Check(listX, listY, listX[j], listY[j], j.ToString(), ref count, depth))
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                tasks.Add(task);
+            }
+
+            //while (tasks.Any(x => !x.IsCompletedSuccessfully))
+            //{
+
+            //}
+
+            return tasks.Any(x => x.Result);
+        }
+
+        private bool Check(List<string> listX, List<string> listY, string wordX, string wordY, string sequence, ref UInt128 count, int depth = 15)
+        {
+            count++;
+            var currentDepth = sequence.Split(',').Length;
+            Console.WriteLine($"current depth: {currentDepth} - {count}");
+
+            if (wordX == wordY)
+            {
+                Console.WriteLine("found solution!");
+                Console.WriteLine($"sequence: {sequence}");
+                return true;
+            }
+
+            if (currentDepth >= depth)
+            {
+                return false;
+            }
+
+
+            for (int i = 0; i < listX.Count; i++)
+            {
+                if (Check(listX, listY, wordX + listX[i], wordY + listY[i], $"{sequence},{i}", ref count, depth)) { return true; }
+            }
+
+            return false;
+        }
+
         private bool CheckNode(Node node, List<int> indices)
         {
             Console.WriteLine($"checking node with depth: {indices.Count + 1}");
@@ -185,6 +248,8 @@ namespace ASK
 
             return false;
         }
+
+
     }
 
     internal class PCPData
