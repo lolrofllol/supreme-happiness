@@ -7,7 +7,20 @@ var inputX = new List<string>() { "001", "01", "01", "10" };
 var inputY = new List<string>() { "0", "011", "101", "001" };
 
 var pcp = new PCP();
-pcp.RunDepthSearch(inputX, inputY, 10);
+var depth = 13;
+
+var time = DateTime.Now;
+pcp.RunDepthSearch(inputX, inputY, depth);
+var timeEnd = DateTime.Now;
+
+Console.WriteLine($"single threaded: {timeEnd - time}");
+
+var timeMultithreaded = DateTime.Now;
+pcp.RunDepthSearch(inputX, inputY, depth, true);
+var timeEndMultithreaded = DateTime.Now;
+
+Console.WriteLine($"multi threaded: {timeEndMultithreaded - timeMultithreaded}");
+
 //var result = pcp.Run(inputX, inputY);
 //var result = pcp.RunWithTree(inputX, inputY, depth: 50);
 
